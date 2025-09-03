@@ -9,8 +9,8 @@
     <nav>
         <ul>
             {% if request.session.user_id %}
-                <li><a href="{% url 'students:home' %}">Panel Principal</a></li>
-                <li><a href="{% url 'students:logout' %}">Cerrar Sesión</a></li>
+
+                <li><a href="{% url 'teachers:logout' %}">Cerrar Sesión</a></li>
             {% else %}
             {% endif %}
         </ul>

@@ -3,6 +3,7 @@ from django.contrib import messages
 from accounts.forms import UserLoginForm
 from accounts.models import User
 
+
 def login_view(request):
     if request.method == 'POST':
         form = UserLoginForm(request.POST)
@@ -29,6 +30,7 @@ def login_view(request):
         form = UserLoginForm()
     return render(request, 'students/login.html', {'form': form})
 
+
 def logout_view(request):
     # Limpiar la sesión personalizada
     if 'user_id' in request.session:
@@ -44,6 +46,7 @@ def logout_view(request):
     
     messages.success(request, 'Sesión cerrada correctamente')
     return redirect('index')
+
 
 
 def home_view(request):
@@ -62,3 +65,30 @@ def home_view(request):
     }
     return render(request, 'students/home.html', context)
 
+
+def verificacion_view(request):
+    return render(request, 'students/verificacion.html')
+
+
+def mapa_view(request):
+    return render(request, 'students/mapa.html')
+
+
+def calendario_view(request):
+    return render(request, 'students/calendario.html')
+
+
+def modulo_informativo_view(request):
+    return render(request, 'students/modulo_informativo.html')
+
+
+def perfil_view(request):
+    return render(request, 'students/perfil.html')
+
+
+def registrar_horas_view(request):
+    return render(request, 'students/registrar_horas.html')
+
+
+def horas_registradas_view(request):
+    return render(request, 'students/horas_registradas.html')

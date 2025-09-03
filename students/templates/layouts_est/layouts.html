@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AlfaGestión - Estudiante{% endblock title %}</title>
+</head>
+<body>
+    <nav>
+        <ul>
+                    
+            
+            {% if request.session.user_id %}
+                <li>Usuario: {{ request.session.username }} ({{ request.session.role|title }})</li>
+                <li><a href="{% url 'students:registrar_horas' %}">Registrar Horas</a></li>
+                <li><a href="{% url 'students:horas_registradas' %}">Horas Registradas</a></li>
+                <li><a href="{% url 'students:mapa' %}">Mapa</a></li>
+                <li><a href="{% url 'students:calendario' %}">Calendario</a></li>
+                <li><a href="{% url 'students:modulo_informativo' %}">Módulo Informativo</a></li>
+                <li><a href="{% url 'students:logout' %}">Cerrar Sesión</a></li>
+            {% else %}
+                <li><a href="{% url 'index' %}">Inicio</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %} {% endblock content %}
+    </main>
+</body>
+</html>
