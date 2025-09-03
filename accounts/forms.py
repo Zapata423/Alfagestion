@@ -5,7 +5,7 @@ from .models import User, Role
 class UserForm(ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name', 'role', 'position', 'grade', 'password']
     
 class RoleForm(ModelForm):
     class Meta:
