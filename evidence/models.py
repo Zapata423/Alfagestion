@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from institutions.models import Institution
+from students.models import Student
 
 # actividades, evidencia, calendario
 
@@ -14,3 +15,16 @@ class Activity(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.institution})"
+    
+
+class Evidence(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="evidence")
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name="evidence")
+    description = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to="evidence/")
+    mime_type = models.CharField(max_length=100, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Evidencia de {self.student} en {self.activity}"
+

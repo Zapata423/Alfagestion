@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from accounts.models import User
+from django.db.models import Sum
 
 
 class Student(models.Model):
@@ -40,3 +41,24 @@ class Student(models.Model):
     def date_joined(self):
         return self.user.date_joined
 
+class HoursControl(models.Model):
+    student = models.OneToOneField("Student", on_delete=models.CASCADE, related_name="control_horas")
+    hours_required = models.IntegerField(default=80)  # Ejemplo: 80 horas de servicio social
+    ultima_actualizacion = models.DateTimeField(auto_now=True)
+
+    @property
+    def hours_accumulated(self):
+        """
+        Calcula la suma de horas de todas las evidencias aprobadas del estudiante.
+        """
+        from evidence.models import Evidence
+        
+        total = Evidence.objects.filter(
+            student=self.student,
+            reports__state="aprobada"
+        ).aggregate(suma=Sum("activity__hours"))["suma"]
+
+        return total or 0  # si no hay horas aprobadas, devuelve 0
+
+    def __str__(self):
+        return f"{self.student} - {self.hours_accumulated}/{self.hours_required}"

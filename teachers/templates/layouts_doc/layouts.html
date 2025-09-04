@@ -9,7 +9,7 @@
     <nav>
         <ul>
             {% if request.session.user_id %}
-
+                <li><a href="{% url 'teachers:verificacion' %}">Verificación</a></li>
                 <li><a href="{% url 'teachers:logout' %}">Cerrar Sesión</a></li>
             {% else %}
             {% endif %}

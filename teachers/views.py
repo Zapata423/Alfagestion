@@ -63,3 +63,5 @@ def home_view(request):
     }
     return render(request, 'teachers/home.html', context)
 
+def verificacion_view(request):
+    return render(request, 'teachers/verificacion.html')
