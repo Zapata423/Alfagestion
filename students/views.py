@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from accounts.forms import UserLoginForm
 from accounts.models import User
-
+from django.views.generic import ListView
+from .models import Student
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, RetrieveUpdateAPIView
+from .serializers import PersonSerializer
 
 def login_view(request):
     if request.method == 'POST':
@@ -92,3 +95,41 @@ def registrar_horas_view(request):
 
 def horas_registradas_view(request):
     return render(request, 'students/horas_registradas.html')
+
+class ListaPersonas(ListView):
+    template_name = "students/mapa.html"
+    context_object_name = 'students'
+
+    def get_queryset(self):
+        return Student.objects.all()
+    
+class PersonListApiView(ListAPIView):
+
+    serializer_class = PersonSerializer
+
+    def get_queryset(self):
+        return Student.objects.all()
+    
+class PersonCreateApiView(CreateAPIView):
+    
+    serializer_class = PersonSerializer
+
+class PersonDetailView(RetrieveAPIView):
+    
+    serializer_class = PersonSerializer
+    queryset = Student.objects.all()
+
+class PersonDeleteView(DestroyAPIView):
+    
+    serializer_class = PersonSerializer
+    queryset = Student.objects.all()
+
+class PersonUpdateApiView(UpdateAPIView):
+    
+    serializer_class = PersonSerializer
+    queryset = Student.objects.all()
+    
+class PersonRetrievUpdateApiView(RetrieveUpdateAPIView):
+    
+    serializer_class = PersonSerializer
+    queryset = Student.objects.all()

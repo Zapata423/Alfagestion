@@ -2,9 +2,10 @@ from django.db import models
 from django.utils import timezone
 from accounts.models import User
 from django.db.models import Sum
+from model_utils.models import TimeStampedModel
 
 
-class Student(models.Model):
+class Student(TimeStampedModel):
     user = models.OneToOneField('accounts.User', on_delete=models.CASCADE, related_name='student_profile', verbose_name="Usuario", null=True, blank=True)
     telefono = models.CharField(max_length=15, blank=True, null=True, verbose_name="Teléfono")
     fecha_nacimiento = models.DateField(verbose_name="Fecha de nacimiento")
@@ -41,10 +42,9 @@ class Student(models.Model):
     def date_joined(self):
         return self.user.date_joined
 
-class HoursControl(models.Model):
+class HoursControl(TimeStampedModel):
     student = models.OneToOneField("Student", on_delete=models.CASCADE, related_name="control_horas")
     hours_required = models.IntegerField(default=80)  # Ejemplo: 80 horas de servicio social
-    ultima_actualizacion = models.DateTimeField(auto_now=True)
 
     @property
     def hours_accumulated(self):

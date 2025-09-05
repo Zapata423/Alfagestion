@@ -5,5 +5,17 @@ Panel de Estudiante - AlfaGestión
 {% endblock title %}
 
 {% block content %}
+            {% if request.session.user_id %}
+                <li>Usuario: {{ request.session.username }} ({{ request.session.role|title }})</li>
+                <li><a href="{% url 'students:registrar_horas' %}">Registrar Horas</a></li>
+                <li><a href="{% url 'students:horas_registradas' %}">Horas Registradas</a></li>
+                <li><a href="{% url 'students:mapa' %}">Mapa</a></li>
+                <li><a href="{% url 'students:calendario' %}">Calendario</a></li>
+                <li><a href="{% url 'students:modulo_informativo' %}">Módulo Informativo</a></li>
+                <li><a href="{% url 'students:logout' %}">Cerrar Sesión</a></li>
+            {% else %}
+                <li><a href="{% url 'index' %}">Inicio</a></li>
+            {% endif %}
+        </ul>
 
 {% endblock content %}
