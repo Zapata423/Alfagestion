@@ -1,20 +1,18 @@
 from django.db import models
-from evidence.models import Evidence
-from accounts.models import User
+from teachers.models import Docente
+from accounts.models import Usuario
 from model_utils.models import TimeStampedModel
 
 
-class Report(TimeStampedModel):
-    ESTADOS = [
-        ('pendiente', 'Pendiente'),
-        ('aprobada', 'Aprobada'),
-        ('rechazada', 'Rechazada'),
-    ]
-    report = models.ForeignKey(Evidence, on_delete=models.CASCADE, related_name="reports")
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reports")  # docentes como usuarios
-    state = models.CharField(max_length=20, choices=ESTADOS, default="pendiente")
-    comments = models.TextField(blank=True, null=True)
-    validation_date = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de validación")
+
+class Validacion(models.Model):
+    actividad = models.ForeignKey('evidence.Actividad', on_delete=models.CASCADE, related_name="validaciones")
+    docente = models.ForeignKey(Docente, on_delete=models.CASCADE, related_name="validaciones")
+    comentarios = models.TextField()
+    aprobada = models.BooleanField(default=False)
+    fecha_validacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.state} - {self.report}"
+        estado = "Aprobada" if self.aprobada else "Rechazada"
+        return f"{self.actividad} → {estado}"
+    

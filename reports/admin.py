@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Report
+from .models import Validacion
 
-admin.site.register(Report)
+admin.site.register(Validacion)
 
 # Register your models here.

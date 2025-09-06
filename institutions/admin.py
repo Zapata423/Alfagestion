@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import Institution
+from .models import Institucion, Encargado
 
-admin.site.register(Institution)
+admin.site.register(Institucion)
+admin.site.register(Encargado)
+
 
 # Register your models here.

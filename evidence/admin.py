@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Activity, Evidence
+from .models import Actividad
 
-admin.site.register(Activity)
-admin.site.register(Evidence)
+admin.site.register(Actividad)
