@@ -62,7 +62,7 @@ ROOT_URLCONF = 'alfagestion.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,6 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounts.Usuario'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

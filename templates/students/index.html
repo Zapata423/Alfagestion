@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Título de la página</title>
+</head>
+<body>
+    <h1>Panel De Estudiante </h1>
+    <h3>Bienvenid@: {{user.estudiante}} </h3>
+    <ul>
+        <li><a href="{% url 'users_app:user-logout' %}">Cerrar Seccion</a></li>
+    </ul>
+</body>
+</html>

@@ -1,17 +1,73 @@
-# from django.forms import ModelForm, Form
-# from django import forms
-# from .models import Usuario, Rol 
+from django import forms
+from .models import Usuario
+from django.contrib.auth import authenticate
 
-# class UserForm(ModelForm):
-#     class Meta:
-#         model = Usuario
-#         fields = ['usuario', 'correo', 'nombre', 'apellido', 'rol', 'position', 'grade', 'password']
+class UserRegisterForm(forms.ModelForm):
+
+  password1 = forms.CharField(
+        label='Contraseña',
+        required=True,
+        widget=forms.PasswordInput(
+              attrs={
+                  'placeholder': 'Contraseña',
+                  'style': '{ margin 10px}'
+              }
+        )
+    )
+  password2 = forms.CharField(
+      label='Contraseña',
+      required=True,
+      widget=forms.PasswordInput(
+            attrs={
+                'placeholder': 'Repetir Contraseña',
+                'style': '{ margin 10px}'
+            }
+      )
+    )
+  class Meta:
+        model = Usuario
+        fields = (
+          'email' ,
+          'rol',
+          'estudiante',
+          'docente',
+          'cargo',
+          'grado',
+          )
+  def clean_password2(self):
+      if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+          self.add_error('password2', 'Las contraseñas no son las mismas')
+
+
+class LoginForm(forms.Form):
     
-# class RoleForm(ModelForm):
-#     class Meta:
-#         model = Role
-#         fields = ['name', 'description']
+    email = forms.CharField(
+      label='email',
+      required=True,
+      widget=forms.TextInput(
+            attrs={
+                'placeholder': 'email',
+                'style': '{ margin 10px}'
+            }
+      )
+  )
+    
+    password = forms.CharField(
+        label='Contraseña',
+        required=True,
+        widget=forms.PasswordInput(
+              attrs={
+                  'placeholder': 'Contraseña',
+                  'style': '{ margin 10px}'
+              }
+        )
+    )
+    
+    def clean(self):
+        cleaned_data = super(LoginForm, self).clean()
+        email = self.cleaned_data['email'] 
+        password = self.cleaned_data['password'] 
+        if not authenticate(email=email, password=password):
+            raise forms.ValidationError('Los datos del Usuario no son correctos')
         
-# class UserLoginForm(Form):
-#     username = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control'}))
-#     password = forms.CharField(max_length=50, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        return self.cleaned_data

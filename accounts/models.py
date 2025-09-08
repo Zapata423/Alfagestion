@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .managers import UserManager
 
 
 
@@ -10,24 +12,28 @@ class Rol(models.Model):
         return self.nombre
 
 
-class Usuario(models.Model):
-    usuario = models.CharField(max_length=50, unique=True, blank=False, null=False)
-    password = models.CharField(max_length=50, blank=False, null=False)
-    email = models.EmailField(unique=True, null=True, blank=True)
-    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name="usuarios")
+class Usuario(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name="usuarios", blank=True, null=True)
     estudiante = models.OneToOneField("students.Estudiante", on_delete=models.SET_NULL, null=True, blank=True)
     docente = models.OneToOneField("teachers.Docente", on_delete=models.SET_NULL, null=True, blank=True)
-    creado_en = models.DateTimeField(auto_now_add=True)
+    creado_en = models.DateTimeField(auto_now_add=True, blank=True)
 
-    cargo = models.CharField(max_length=100, blank=True, null=True, help_text="Position of the teacher (e.g: Professor, Coordinator, Director)")
-    grado = models.CharField(max_length=50, blank=True, null=True, help_text="Student grade (e.g: 1st, 2nd, 3rd)")
+    cargo = models.CharField(max_length=100, blank=True, null=True, help_text="( Professor, Coordinator, Director)")
+    grado = models.CharField(max_length=50, blank=True, null=True, help_text="Si es estudiante")
+
+    is_staff = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+
+    objects = UserManager()
 
 
 
 
     def __str__(self):
-        # Usamos usuario o email porque no existen nombre y apellido en este modelo
-        nombreCompleto = self.usuario or (self.email if self.email else "Usuario sin nombre")
+        # Usamos el email como identificador principal
+        nombreCompleto = self.email or "Usuario sin email"
 
         # Mostrar información específica según el rol
         if self.rol and hasattr(self.rol, "nombre"):
