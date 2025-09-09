@@ -7,7 +7,6 @@ class Institucion(models.Model):
     direccion = models.CharField(max_length=200)
     telefono = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    nombre_contacto = models.CharField(max_length=100, blank=True, null=True)
     telefono_contacto = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):

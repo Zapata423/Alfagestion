@@ -13,6 +13,16 @@ class Rol(models.Model):
 
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
+    GRADO_CHOICES = [
+        ('11', ' Once'),
+        ('10', 'Decimo'),
+    ]
+    GRUPO_CHOICES = [
+        ('A', 'Grupo A'),
+        ('B', 'Grupo B'),
+        ('C', 'Grupo C'),
+        ('D', 'Grupo D'),
+    ]
     email = models.EmailField(unique=True)
     rol = models.ForeignKey(Rol, on_delete=models.CASCADE, related_name="usuarios", blank=True, null=True)
     estudiante = models.OneToOneField("students.Estudiante", on_delete=models.SET_NULL, null=True, blank=True)
@@ -20,7 +30,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     creado_en = models.DateTimeField(auto_now_add=True, blank=True)
 
     cargo = models.CharField(max_length=100, blank=True, null=True, help_text="( Professor, Coordinator, Director)")
-    grado = models.CharField(max_length=50, blank=True, null=True, help_text="Si es estudiante")
+    grado = models.CharField(max_length=2, choices=GRADO_CHOICES, null=True, blank=True)
+    grupo = models.CharField(max_length=1, choices=GRUPO_CHOICES, null=True, blank=True)
 
     is_staff = models.BooleanField(default=False)
 
@@ -41,7 +52,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
             if nombre_rol == "docente" and self.cargo:
                 return f"{nombreCompleto} - {self.rol.nombre} ({self.cargo})"
             elif nombre_rol == "estudiante" and self.grado:
-                return f"{nombreCompleto} - {self.rol.nombre} ({self.grado})"
+                return f"{nombreCompleto} - {self.rol.nombre} ({self.grado})({self.grupo})"
             else:
                 return f"{nombreCompleto} - {self.rol.nombre}"
 

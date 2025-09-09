@@ -7,7 +7,6 @@ urlpatterns = [
     re_path('', include('accounts.urls')),
     re_path('', include('students.urls')),
     re_path('', include('teachers.urls')),
-    path('', include('institutions.urls')),
 
     # path('', include('teachers.urls')),
     # path('', include('evidence.urls')),

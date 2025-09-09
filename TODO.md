@@ -1,0 +1,3 @@
+- [x] Edit alfagestion/urls.py to add namespace='institutions' to the include of institutions.urls
+- [x] Edit teachers/serializers.py to change ActividadSerializer to use StringRelatedField instead of HyperlinkedRelatedField
+- [ ] Test the API endpoint /api/actividades/?estudiante_id=1 to confirm it works without hyperlinks

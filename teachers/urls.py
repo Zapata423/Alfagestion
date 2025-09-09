@@ -1,12 +1,14 @@
 from django.urls import path
 from . import views
 
+
 app_name = 'teachers_app'
 
 urlpatterns = [
     path('panelDocentes/', views.HomePageTeachers.as_view(), name='panelDocentes'),
-    # path('login/', views.login_view, name='login'),
-    # path('logout/', views.logout_view, name='logout'),
-    # path('home/', views.home_view, name='home'),
-    # path('verificacion/', views.verificacion_view, name='verificacion'),
+    path('api/grados/lista/', views.ListaGradosApiView.as_view(),),
+    path('api/grupos/lista/', views.ListaGruposApiView.as_view(),),
+    path('api/estudiantes/', views.ListaEstudiantesPorGradoGrupoApiView.as_view(),),
+    path('api/actividades/', views.ListaActividadesPorEstudianteApiView.as_view(),),
+
 ]
