@@ -3,6 +3,7 @@ from accounts.models import Usuario
 from students.models import Estudiante
 from evidence.models import Actividad
 from institutions.models import Institucion, Encargado
+from reports.models import Validacion
 from django.contrib.auth.models import User
 
 
@@ -49,4 +50,19 @@ class ActividadSerializer(serializers.ModelSerializer):
 
 
 
+class ValidacionSerializer(serializers.ModelSerializer):
+    actividad = serializers.PrimaryKeyRelatedField(queryset=Actividad.objects.all())
+    status = serializers.ChoiceField(choices=Validacion.STATUS_CHOICES, required=True)
 
+    class Meta:
+        model = Validacion
+        fields = ['id', 'actividad', 'docente', 'comentarios', 'status', 'fecha_validacion']
+        read_only_fields = ['docente', 'fecha_validacion']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        estudiante_id = self.context.get('estudiante_id')
+        if estudiante_id:
+            self.fields['actividad'].queryset = Actividad.objects.filter(estudiante_id=estudiante_id)
+        else:
+            self.fields['actividad'].queryset = Actividad.objects.none()
