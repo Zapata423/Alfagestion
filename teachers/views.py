@@ -92,3 +92,28 @@ class CrearValidacionApiView(CreateAPIView):
         # Asignar automáticamente el docente logueado
         docente = self.request.user.docente
         serializer.save(docente=docente)
+
+
+class ActualizarValidacionApiView(RetrieveUpdateAPIView):
+    serializer_class = ValidacionSerializer
+    queryset = Validacion.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Filtrar validaciones solo del docente logueado
+        return Validacion.objects.filter(docente=self.request.user.docente)
+
+    def perform_update(self, serializer):
+        # Verificar que el usuario tenga rol de docente
+        if not self.request.user.rol or self.request.user.rol.nombre.lower() != 'docente':
+            raise ValidationError("Solo los docentes pueden actualizar validaciones.")
+
+        # Verificar que el usuario tenga un perfil de docente asociado
+        if not self.request.user.docente:
+            raise ValidationError("El usuario no tiene un perfil de docente asociado.")
+
+        # Asegurar que la validación pertenece al docente logueado
+        if serializer.instance.docente != self.request.user.docente:
+            raise ValidationError("No tienes permiso para actualizar esta validación.")
+
+        serializer.save()
