@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+from datetime import timedelta
 
 from pathlib import Path
 
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'teachers',
     'students',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -140,7 +142,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),   # Token de acceso dura 60 minutos
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # Token de refresco dura 7 días
+    'ROTATE_REFRESH_TOKENS': True,                    # Opcional: generar un nuevo refresh token en cada login
+    'BLACKLIST_AFTER_ROTATION': True,                 # Opcional: invalidar refresh token antiguo
 }

@@ -24,11 +24,19 @@ class UploadInstitucionAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = InstitucionSerializer(data=request.data)
+        serializer = InstitucionSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             institucion = serializer.save()
-            return Response({"message": "Institucion creada exitosamente", "id": institucion.id}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "success": True,
+                "message": "Institucion creada exitosamente",
+                "id": institucion.id
+            }, status=status.HTTP_201_CREATED)
+
+        return Response({
+            "success": False,
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadEncargadoAPIView(APIView):
