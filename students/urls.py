@@ -8,12 +8,6 @@ urlpatterns = [
     path('api/upload-actividad/', views.UploadActividadAPIView.as_view(), name='upload-actividad'),
     path('api/upload-actividad/<int:pk>/', views.ActividadDetailAPIView.as_view(), name='actividad-detail'),
     path('api/validaciones-estado/', views.ValidacionesEstadoAPIView.as_view(), name='validaciones-estado'),
-    # path('api/persona/list/', views.PersonListApiView.as_view(),),
-    # path('api/persona/create/', views.PersonCreateApiView.as_view(),),
-    # path('api/persona/detail/<pk>/', views.PersonDetailView.as_view(),),
-    # path('api/persona/delete/<pk>/', views.PersonDeleteView.as_view(),),
-    # path('api/persona/update/<pk>/', views.PersonUpdateApiView.as_view(),),
-    # path('api/persona/modificar/<pk>/', views.PersonRetrievUpdateApiView.as_view(),),
 
 
 ]

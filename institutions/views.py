@@ -63,3 +63,25 @@ class UploadEncargadoAPIView(APIView):
             "errors": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
     
+
+class DeleteEncargadoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            encargado = Encargado.objects.get(pk=pk, creador=request.user)
+            encargado.delete()
+            return Response({"detail": "Encargado eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        except Encargado.DoesNotExist:
+            return Response({"detail": "Encargado no encontrado o no tienes permisos."}, status=status.HTTP_404_NOT_FOUND)
+        
+class DeleteInstitucionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        try:
+            institucion = Institucion.objects.get(pk=pk, creador=request.user)
+            institucion.delete()
+            return Response({"detail": "Institucion eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        except Institucion.DoesNotExist:
+            return Response({"detail": "Institucion no encontrada o no tienes permisos."}, status=status.HTTP_404_NOT_FOUND)
