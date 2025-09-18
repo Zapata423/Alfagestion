@@ -14,8 +14,13 @@ class InstitucionSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class EncargadoSerializer(serializers.ModelSerializer):
-    institucion = serializers.PrimaryKeyRelatedField(queryset=Institucion.objects.all())
-
     class Meta:
         model = Encargado
-        fields = '__all__'
+        fields = ['id', 'nombre', 'apellido', 'correo', 'telefono', 'cargo']
+        extra_kwargs = {
+            'creador': {'write_only': True}  # no lo envía el cliente, lo asignamos automático
+        }
+
+    def create(self, validated_data):
+        validated_data['creador'] = self.context['request'].user
+        return super().create(validated_data)

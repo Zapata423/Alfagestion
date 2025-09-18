@@ -10,14 +10,21 @@ from .serializers import InstitucionSerializer, EncargadoSerializer
 # Create your views here.
 
 
-class InstitucionDetailView(RetrieveAPIView):
-    queryset = Institucion.objects.all()
-    serializer_class = InstitucionSerializer
+class MisInstitucionesView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        instituciones = Institucion.objects.filter(creador=request.user)
+        serializer = InstitucionSerializer(instituciones, many=True)
+        return Response(serializer.data)
 
-class EncargadoDetailView(RetrieveAPIView):
-    queryset = Encargado.objects.all()
-    serializer_class = EncargadoSerializer
+class MisEncargadosView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        encargados = Encargado.objects.filter(creador=request.user)
+        serializer = EncargadoSerializer(encargados, many=True)
+        return Response(serializer.data)
 
 
 class UploadInstitucionAPIView(APIView):
@@ -38,17 +45,21 @@ class UploadInstitucionAPIView(APIView):
             "errors": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
-
 class UploadEncargadoAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = EncargadoSerializer(data=request.data)
+        serializer = EncargadoSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             encargado = serializer.save()
-            return Response({"message": "Encargado creado exitosamente", "id": encargado.id}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
+            return Response({
+                "success": True,
+                "message": "Encargado creado exitosamente",
+                "id": encargado.id,
+                "creador": encargado.creador.email
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            "success": False,
+            "errors": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
     
