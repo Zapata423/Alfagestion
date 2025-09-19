@@ -10,6 +10,7 @@ urlpatterns = [
     re_path('', include('students.urls')),
     re_path('', include('teachers.urls')),
     re_path('', include('institutions.urls')),
+    re_path('', include('evidence.urls')),
 
     # path('', include('teachers.urls')),
     # path('', include('evidence.urls')),

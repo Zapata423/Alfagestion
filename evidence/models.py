@@ -4,7 +4,7 @@ from institutions.models import Institucion, Encargado
 # actividades(evidencia) calendario
 
 class Actividad(models.Model):
-    estudiante = models.ForeignKey('students.Estudiante', on_delete=models.CASCADE, related_name="actividades")
+    creador = models.ForeignKey('accounts.Usuario', on_delete=models.CASCADE, related_name='actividades_creadas', null=True, blank=True)
     institucion = models.ForeignKey(Institucion, on_delete=models.CASCADE, related_name="actividades")
     encargado = models.ForeignKey(Encargado, on_delete=models.SET_NULL, null=True, blank=True, related_name="actividades")
 
@@ -16,5 +16,5 @@ class Actividad(models.Model):
     fecha_subida = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.titulo} - {self.estudiante}"
+        return f"{self.titulo} - {self.creador}"
 

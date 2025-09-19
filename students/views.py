@@ -6,40 +6,39 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import ActividadSerializer
 from evidence.models import Actividad
 
 class HomePageStudents(LoginRequiredMixin, TemplateView):
     template_name = "students/index.html"
     login_url = reverse_lazy('users_app:estudiantes-login')
 
-class UploadActividadAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+# class UploadActividadAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        if not hasattr(request.user, "estudiante") or request.user.estudiante is None:
-            return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
+#     def get(self, request):
+#         if not hasattr(request.user, "estudiante") or request.user.estudiante is None:
+#             return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
 
-        actividades = Actividad.objects.filter(estudiante=request.user.estudiante)
-        serializer = ActividadSerializer(actividades, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#         actividades = Actividad.objects.filter(estudiante=request.user.estudiante)
+#         serializer = ActividadSerializer(actividades, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        if not hasattr(request.user, "estudiante") or request.user.estudiante is None:
-            return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request):
+#         if not hasattr(request.user, "estudiante") or request.user.estudiante is None:
+#             return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = ActividadSerializer(
-            data=request.data,
-            context={"estudiante": request.user.estudiante}
-        )
-        if serializer.is_valid():
-            actividad = serializer.save()
-            return Response({
-                "message": "Actividad subida exitosamente",
-                "id": actividad.id
-            }, status=status.HTTP_201_CREATED)
+#         serializer = ActividadSerializer(
+#             data=request.data,
+#             context={"estudiante": request.user.estudiante}
+#         )
+#         if serializer.is_valid():
+#             actividad = serializer.save()
+#             return Response({
+#                 "message": "Actividad subida exitosamente",
+#                 "id": actividad.id
+#             }, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ValidacionesEstadoAPIView(APIView):
     permission_classes = [IsAuthenticated]
