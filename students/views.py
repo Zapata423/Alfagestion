@@ -59,21 +59,21 @@ class ValidacionesEstadoAPIView(APIView):
             })
         return Response(data)
 
-class ActividadDetailAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+# class ActividadDetailAPIView(APIView):
+#     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk):
-        if not hasattr(request.user, 'estudiante') or request.user.estudiante is None:
-            return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
+#     def get(self, request, pk):
+#         if not hasattr(request.user, 'estudiante') or request.user.estudiante is None:
+#             return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
 
-        actividad = get_object_or_404(Actividad, pk=pk, estudiante=request.user.estudiante)
-        serializer = ActividadSerializer(actividad)
-        return Response(serializer.data)
+#         actividad = get_object_or_404(Actividad, pk=pk, estudiante=request.user.estudiante)
+#         serializer = ActividadSerializer(actividad)
+#         return Response(serializer.data)
 
-    def delete(self, request, pk):
-        if not hasattr(request.user, 'estudiante') or request.user.estudiante is None:
-            return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
+#     def delete(self, request, pk):
+#         if not hasattr(request.user, 'estudiante') or request.user.estudiante is None:
+#             return Response({"error": "Usuario no tiene estudiante asociado"}, status=status.HTTP_400_BAD_REQUEST)
 
-        actividad = get_object_or_404(Actividad, pk=pk, estudiante=request.user.estudiante)
-        actividad.delete()
-        return Response({"message": "Actividad eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)
+#         actividad = get_object_or_404(Actividad, pk=pk, estudiante=request.user.estudiante)
+#         actividad.delete()
+#         return Response({"message": "Actividad eliminada exitosamente"}, status=status.HTTP_204_NO_CONTENT)

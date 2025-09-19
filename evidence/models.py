@@ -6,7 +6,7 @@ from institutions.models import Institucion, Encargado
 class Actividad(models.Model):
     creador = models.ForeignKey('accounts.Usuario', on_delete=models.CASCADE, related_name='actividades_creadas', null=True, blank=True)
     institucion = models.ForeignKey(Institucion, on_delete=models.CASCADE, related_name="actividades")
-    encargado = models.ForeignKey(Encargado, on_delete=models.SET_NULL, null=True, blank=True, related_name="actividades")
+    encargado = models.ForeignKey(Encargado, on_delete=models.CASCADE, related_name="actividades")
 
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
