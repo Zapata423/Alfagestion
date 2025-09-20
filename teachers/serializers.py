@@ -1,68 +1,102 @@
-from rest_framework import serializers, pagination
+from rest_framework import serializers
 from accounts.models import Usuario
-from students.models import Estudiante
 from evidence.models import Actividad
 from institutions.models import Institucion, Encargado
+from django.db.models import Sum
 from reports.models import Validacion
-from django.contrib.auth.models import User
 
 
-class GradoSerializer(serializers.Serializer):
-    grado = serializers.CharField()
 
-
-class GrupoSerializer(serializers.Serializer):
-    grupo = serializers.CharField()
-
-
-class EstudianteSerializer(serializers.ModelSerializer):
-    nombre_completo = serializers.SerializerMethodField()
+class EstudianteConHorasSerializer(serializers.ModelSerializer):
+    horas_subidas = serializers.SerializerMethodField()
+    horas_verificadas = serializers.SerializerMethodField()
+    ultima_carga = serializers.SerializerMethodField()
+    nombre = serializers.SerializerMethodField()
 
     class Meta:
         model = Usuario
-        fields = ('nombre_completo', 'grado', 'grupo')
+        fields = [
+            "id", "nombre", "grado", "grupo",
+            "horas_subidas", "horas_verificadas", "ultima_carga"
+        ]
 
-    def get_nombre_completo(self, obj):
-        if obj.estudiante:
-            return f"{obj.estudiante.nombres} {obj.estudiante.apellidos}"
-        return obj.email
+    def get_nombre(self, obj):
+        return f"{obj.estudiante.nombres} {obj.estudiante.apellidos}" if obj.estudiante else obj.email
 
+    def get_horas_subidas(self, obj):
+        from evidence.models import Actividad
+        return (
+            Actividad.objects.filter(creador=obj)
+            .aggregate(suma=Sum("horas"))["suma"] or 0
+        )
 
-class InstitucionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Institucion
-        fields = '__all__'
+    def get_horas_verificadas(self, obj):
+        from evidence.models import Actividad
+        return (
+            Actividad.objects.filter(
+                creador=obj,
+                validaciones__status="approved"
+            ).aggregate(suma=Sum("horas"))["suma"] or 0
+        )
 
+    def get_ultima_carga(self, obj):
+        from evidence.models import Actividad
+        ultima = (
+            Actividad.objects.filter(creador=obj)
+            .order_by("-fecha_subida")
+            .first()
+        )
+        return ultima.fecha_subida if ultima else None
+    
 
-class EncargadoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Encargado
-        fields = '__all__'
-
-
-class ActividadSerializer(serializers.ModelSerializer):
-    institucion = InstitucionSerializer(read_only=True)
-    encargado = EncargadoSerializer(read_only=True, allow_null=True)
+        
+class ActividadesEstudianteSerializer(serializers.ModelSerializer):
+    estado = serializers.SerializerMethodField()
 
     class Meta:
         model = Actividad
-        fields = ('titulo', 'descripcion', 'archivo', 'horas', 'institucion', 'encargado')
+        fields = ["id", "titulo", "horas", "fecha_subida", "estado"]
 
+    def get_estado(self, obj):
+        # buscamos la última validación (si existe)
+        validacion = obj.validaciones.order_by("-fecha_validacion").first()
+        return validacion.get_status_display() if validacion else "Pendiente"
+    
+    
+class EvidenciaActividadSerializer(serializers.ModelSerializer):
+    institucion_nombre = serializers.CharField(source="institucion.nombre", read_only=True)
+    encargado_nombre = serializers.CharField(source="encargado.nombre", read_only=True)
+    archivo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Actividad
+        fields = [
+            "id", "titulo", "descripcion", "archivo", "archivo_url", "horas",
+            "fecha_subida",
+            "institucion", "institucion_nombre",
+            "encargado", "encargado_nombre"
+        ]
+
+    def get_archivo_url(self, obj):
+        request = self.context.get('request')
+        if obj.archivo and hasattr(obj.archivo, "url"):
+            return request.build_absolute_uri(obj.archivo.url)
+
+
+class EvidenciaInstitucionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institucion
+        fields = ["id", "nombre", "poblacion_intervenida", "direccion",
+                  "telefono", "email", "telefono_contacto"]
+
+class EvidenciaEncargadoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Encargado
+        fields = ["id", "nombre", "apellido", "correo", "telefono", "cargo"]
 
 
 class ValidacionSerializer(serializers.ModelSerializer):
-    actividad = serializers.PrimaryKeyRelatedField(queryset=Actividad.objects.all())
-    status = serializers.ChoiceField(choices=Validacion.STATUS_CHOICES, required=True)
-
     class Meta:
         model = Validacion
-        fields = ['id', 'actividad', 'docente', 'comentarios', 'status', 'fecha_validacion']
-        read_only_fields = ['docente', 'fecha_validacion']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        estudiante_id = self.context.get('estudiante_id')
-        if estudiante_id:
-            self.fields['actividad'].queryset = Actividad.objects.filter(estudiante_id=estudiante_id)
-        else:
-            self.fields['actividad'].queryset = Actividad.objects.none()
+        fields = ["id", "actividad", "docente", "comentarios", "status", "fecha_validacion"]
+        read_only_fields = ["id", "fecha_validacion", "docente", "actividad"]

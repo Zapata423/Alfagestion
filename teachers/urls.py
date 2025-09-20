@@ -5,12 +5,11 @@ from . import views
 app_name = 'teachers_app'
 
 urlpatterns = [
-    path('panelDocentes/', views.HomePageTeachers.as_view(), name='panelDocentes'),
-    path('api/grados/lista/', views.ListaGradosApiView.as_view(),),
-    path('api/grupos/lista/', views.ListaGruposApiView.as_view(),),
-    path('api/estudiantes/', views.ListaEstudiantesPorGradoGrupoApiView.as_view(),),
-    path('api/actividades/', views.ListaActividadesPorEstudianteApiView.as_view(),),
-    path("validaciones/crear/<int:estudiante_id>/", views.CrearValidacionApiView.as_view(), name="crear-validacion"),
-    path("validaciones/actualizar/<int:pk>/", views.ActualizarValidacionApiView.as_view(), name="actualizar-validacion"),
-
+    path("api/estudiantes/", views.EstudiantesPorGradoGrupoView.as_view(), name="estudiantes-grado-grupo"),
+    path("api/estudiante/<int:estudiante_id>/actividades/", views.ActividadesPorEstudianteView.as_view(), name="actividades-por-estudiante"),
+    path("api/actividad/<int:actividad_id>/", views.ActividadDetailAPIView.as_view(), name="actividad-detail"),
+    path("api/actividades/<int:actividad_id>/institucion/", views.ActividadInstitucionAPIView.as_view(), name="actividad-institucion"),
+    path("api/actividades/<int:actividad_id>/encargado/", views.ActividadEncargadoAPIView.as_view(), name="actividad-encargado"),
+    path("api/actividades/<int:pk>/validar/", views.ValidarActividadAPIView.as_view(), name="validar-actividad"),
+    path("api/actividades/<int:actividad_id>/validacion/editar/", views.EditarValidacionPorActividadView.as_view(), name="editar_validacion_actividad"),
 ]

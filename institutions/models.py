@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 class Institucion(models.Model):
     nombre = models.CharField(max_length=200)

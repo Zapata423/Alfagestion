@@ -1,6 +1,4 @@
 from django.db import models
-from django.utils import timezone
-from accounts.models import Usuario
 
 class Docente(models.Model):
     nombre = models.CharField(max_length=100)

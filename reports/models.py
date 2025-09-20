@@ -1,7 +1,5 @@
 from django.db import models
 from teachers.models import Docente
-from accounts.models import Usuario
-from model_utils.models import TimeStampedModel
 
 
 

@@ -26,8 +26,15 @@ class ControlHoras(models.Model):
             ).aggregate(suma=Sum("horas"))["suma"] or 0
         )
 
+    def horas_subidas(self): 
+        from evidence.models import Actividad 
+        return ( 
+            Actividad.objects.filter(
+                estudiante=self.estudiante 
+            ).aggregate(suma=Sum("horas"))["suma"] or 0 )
 
-    def __str__(self):
-        return f"{self.estudiante} - {self.horas_acumuladas} horas"
+
+    def __str__(self): 
+        return f"{self.estudiante} - {self.horas_aprobadas()} aprobadas / {self.horas_subidas()} subidas"
 
 

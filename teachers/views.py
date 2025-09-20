@@ -1,119 +1,131 @@
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import (TemplateView, ListView)
-from django.urls import reverse_lazy, reverse
-from accounts.models import Usuario
-from students.models import Estudiante
-from evidence.models import Actividad
 from reports.models import Validacion
+from accounts.models import Usuario
+from evidence.models import Actividad
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import ValidationError
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 
-from rest_framework.generics import (
-    ListAPIView,
-    CreateAPIView,
-    RetrieveAPIView,
-    DestroyAPIView,
-    UpdateAPIView,
-    RetrieveUpdateAPIView,
-)
 
 from .serializers import (
-    GrupoSerializer,
-    GradoSerializer,
-    EstudianteSerializer,
-    ActividadSerializer,
-    ValidacionSerializer,
+    EstudianteConHorasSerializer,
+    ActividadesEstudianteSerializer,
+    EvidenciaActividadSerializer,
+    EvidenciaEncargadoSerializer,
+    EvidenciaInstitucionSerializer,
+    ValidacionSerializer
 )
 
-class HomePageTeachers(LoginRequiredMixin, TemplateView):
-    template_name = "teachers/index.html"
-    login_url = reverse_lazy('users_app:docentes-login')
-    
 
-class ListaGradosApiView(ListAPIView):
-    serializer_class = GradoSerializer
+class EstudiantesPorGradoGrupoView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return Usuario.objects.exclude(grado__isnull=True).values('grado').distinct()
-    
+    def get(self, request):
+        grado = request.query_params.get("grado")
+        grupo = request.query_params.get("grupo")
 
-class ListaGruposApiView(ListAPIView):
-    serializer_class = GrupoSerializer
+        queryset = Usuario.objects.filter(estudiante__isnull=False)
 
-    def get_queryset(self):
-        return Usuario.objects.exclude(grupo__isnull=True).values('grupo').distinct()
-
-
-
-
-class ListaEstudiantesPorGradoGrupoApiView(ListAPIView):
-    serializer_class = EstudianteSerializer
-
-    def get_queryset(self):
-        grado = self.request.query_params.get('grado')
-        grupo = self.request.query_params.get('grupo')
-        queryset = Usuario.objects.filter(rol__nombre='Estudiante')
         if grado:
             queryset = queryset.filter(grado=grado)
         if grupo:
             queryset = queryset.filter(grupo=grupo)
-        return queryset
 
+        serializer = EstudianteConHorasSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-class ListaActividadesPorEstudianteApiView(ListAPIView):
-    serializer_class = ActividadSerializer
-
-    def get_queryset(self):
-        estudiante_id = self.request.query_params.get('estudiante_id')
-        if estudiante_id:
-            return Actividad.objects.filter(estudiante_id=estudiante_id)
-        return Actividad.objects.none()
-
-class CrearValidacionApiView(CreateAPIView):
-    serializer_class = ValidacionSerializer
-    queryset = Validacion.objects.all()
+class ActividadesPorEstudianteView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['estudiante_id'] = self.kwargs.get('estudiante_id')
-        return context
+    def get(self, request, estudiante_id):
+        # buscamos al estudiante
+        estudiante = get_object_or_404(Usuario, id=estudiante_id, estudiante__isnull=False)
 
-    def perform_create(self, serializer):
-        # Verificar que el usuario tenga rol de docente
-        if not self.request.user.rol or self.request.user.rol.nombre.lower() != 'docente':
-            raise ValidationError("Solo los docentes pueden crear validaciones.")
+        # todas las actividades que el estudiante ha subido
+        actividades = Actividad.objects.filter(creador=estudiante)
 
-        # Verificar que el usuario tenga un perfil de docente asociado
-        if not self.request.user.docente:
-            raise ValidationError("El usuario no tiene un perfil de docente asociado.")
+        # serializamos
+        serializer = ActividadesEstudianteSerializer(actividades, many=True)
 
-        # Asignar automáticamente el docente logueado
-        docente = self.request.user.docente
-        serializer.save(docente=docente)
+        return Response(serializer.data)
 
 
-class ActualizarValidacionApiView(RetrieveUpdateAPIView):
-    serializer_class = ValidacionSerializer
-    queryset = Validacion.objects.all()
+
+
+class ActividadDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        # Filtrar validaciones solo del docente logueado
-        return Validacion.objects.filter(docente=self.request.user.docente)
+    def get(self, request, actividad_id):
+        actividad = get_object_or_404(Actividad, id=actividad_id)
+        serializer = EvidenciaActividadSerializer(actividad, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
-    def perform_update(self, serializer):
-        # Verificar que el usuario tenga rol de docente
-        if not self.request.user.rol or self.request.user.rol.nombre.lower() != 'docente':
-            raise ValidationError("Solo los docentes pueden actualizar validaciones.")
+class ActividadInstitucionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
-        # Verificar que el usuario tenga un perfil de docente asociado
-        if not self.request.user.docente:
-            raise ValidationError("El usuario no tiene un perfil de docente asociado.")
+    def get(self, request, actividad_id):
+        actividad = get_object_or_404(Actividad, id=actividad_id)
+        institucion = actividad.institucion
+        serializer = EvidenciaInstitucionSerializer(institucion)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        # Asegurar que la validación pertenece al docente logueado
-        if serializer.instance.docente != self.request.user.docente:
-            raise ValidationError("No tienes permiso para actualizar esta validación.")
 
-        serializer.save()
+class ActividadEncargadoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, actividad_id):
+        actividad = get_object_or_404(Actividad, id=actividad_id)
+        encargado = actividad.encargado
+        serializer = EvidenciaEncargadoSerializer(encargado)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ValidarActividadAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        actividad = get_object_or_404(Actividad, pk=pk)
+        docente = request.user.docente  
+
+        data = request.data.copy()
+        serializer = ValidacionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(actividad=actividad, docente=docente)
+            return Response({
+                "success": True,
+                "actividad": actividad.titulo,
+                "status": serializer.data["status"],
+                "comentarios": serializer.data["comentarios"],
+                "fecha_validacion": serializer.data["fecha_validacion"]
+            })
+        return Response(serializer.errors, status=400)
+    
+class EditarValidacionPorActividadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, actividad_id):
+        try:
+            # buscamos la validación asociada a la actividad
+            validacion = Validacion.objects.filter(actividad_id=actividad_id).last()
+            if not validacion:
+                return Response(
+                    {"success": False, "message": "No existe validación para esta actividad"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            serializer = ValidacionSerializer(validacion, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "success": True,
+                    "message": "Estado de validación actualizado",
+                    "data": serializer.data
+                })
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                {"success": False, "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -1,11 +1,8 @@
-from django.shortcuts import render, redirect
-from django.views.generic import ( CreateView, TemplateView, View)
+
+from django.views.generic import (  TemplateView)
 from django.views.generic.edit import ( FormView)
 from .models import Usuario
-from .forms import UserRegisterForm, LoginForm
-from django.urls import reverse_lazy, reverse
-from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from .forms import UserRegisterForm
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import LoginTeacherSerializer, LoginStudentsSerializer
