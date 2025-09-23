@@ -4,7 +4,7 @@ from .models import Institucion, Encargado
 class InstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institucion
-        fields = ['id', 'nombre', 'poblacion_intervenida', 'direccion', 'telefono', 'email', 'telefono_contacto']
+        fields = ['id', 'nombre', 'poblacion_intervenida', 'direccion', 'barrio', 'ciudad', 'telefono', 'email',]
         extra_kwargs = {
             'creador': {'write_only': True}
         }
@@ -16,7 +16,7 @@ class InstitucionSerializer(serializers.ModelSerializer):
 class EncargadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Encargado
-        fields = ['id', 'nombre', 'apellido', 'correo', 'telefono', 'cargo']
+        fields = ['id', 'nombre', 'apellido', 'correo', 'telefono', 'cargo', 'observaciones',]
         extra_kwargs = {
             'creador': {'write_only': True}  # no lo envía el cliente, lo asignamos automático
         }

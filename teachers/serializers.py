@@ -86,13 +86,13 @@ class EvidenciaActividadSerializer(serializers.ModelSerializer):
 class EvidenciaInstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institucion
-        fields = ["id", "nombre", "poblacion_intervenida", "direccion",
-                  "telefono", "email", "telefono_contacto"]
+        fields = ["id", "nombre", "poblacion_intervenida", "direccion", "barrio", "ciudad",
+                  "telefono", "email",]
 
 class EvidenciaEncargadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Encargado
-        fields = ["id", "nombre", "apellido", "correo", "telefono", "cargo"]
+        fields = ["id", "nombre", "apellido", "correo", "telefono", "cargo", "observaciones",]
 
 
 class ValidacionSerializer(serializers.ModelSerializer):
