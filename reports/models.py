@@ -10,7 +10,6 @@ class Validacion(models.Model):
         ('rejected', 'Rechazada'),
     ]
     actividad = models.ForeignKey('evidence.Actividad', on_delete=models.CASCADE, related_name="validaciones")
-    docente = models.ForeignKey(Docente, on_delete=models.CASCADE, related_name="validaciones")
     comentarios = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     fecha_validacion = models.DateTimeField(auto_now_add=True)

@@ -96,7 +96,11 @@ class EvidenciaEncargadoSerializer(serializers.ModelSerializer):
 
 
 class ValidacionSerializer(serializers.ModelSerializer):
+    validacion_enviada = serializers.SerializerMethodField()
     class Meta:
         model = Validacion
-        fields = ["id", "actividad", "docente", "comentarios", "status", "fecha_validacion"]
+        fields = ["id", "actividad", "comentarios", "status", "fecha_validacion", "validacion_enviada"]
         read_only_fields = ["id", "fecha_validacion", "docente", "actividad"]
+
+    def get_validacion_enviada(self, obj):
+        return obj.actividad.validaciones.exists()

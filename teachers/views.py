@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-
+from django.db import IntegrityError
 
 from .serializers import (
     EstudianteConHorasSerializer,
@@ -86,20 +86,29 @@ class ValidarActividadAPIView(APIView):
 
     def post(self, request, pk):
         actividad = get_object_or_404(Actividad, pk=pk)
-        docente = request.user.docente  
 
-        data = request.data.copy()
-        serializer = ValidacionSerializer(data=data)
+        # Evitar duplicados solo por actividad (sin docente)
+        if Validacion.objects.filter(actividad=actividad).exists():
+            return Response(
+                {"error": "Ya existe una validación de esta actividad."},
+                status=400
+            )
+
+        serializer = ValidacionSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(actividad=actividad, docente=docente)
-            return Response({
-                "success": True,
-                "actividad": actividad.titulo,
-                "status": serializer.data["status"],
-                "comentarios": serializer.data["comentarios"],
-                "fecha_validacion": serializer.data["fecha_validacion"]
-            })
-        return Response(serializer.errors, status=400)
+            try:
+                serializer.save(actividad=actividad)  # no docente
+                return Response({
+                    "success": True,
+                    "actividad": actividad.titulo,
+                    "status": serializer.data["status"],
+                    "comentarios": serializer.data["comentarios"],
+                    "fecha_validacion": serializer.data["fecha_validacion"]
+                })
+            except IntegrityError as e:
+                return Response({"error": f"Error de integridad: {str(e)}"}, status=400)
+        else:
+            return Response(serializer.errors, status=400)
     
 class EditarValidacionPorActividadView(APIView):
     permission_classes = [IsAuthenticated]
