@@ -52,15 +52,20 @@ class EstudianteConHorasSerializer(serializers.ModelSerializer):
         
 class ActividadesEstudianteSerializer(serializers.ModelSerializer):
     estado = serializers.SerializerMethodField()
+    tiene_validacion = serializers.SerializerMethodField()
 
     class Meta:
         model = Actividad
-        fields = ["id", "titulo", "horas", "fecha_subida", "estado"]
+        fields = ["id", "titulo", "horas", "fecha_subida", "estado", "tiene_validacion"]
 
     def get_estado(self, obj):
         # buscamos la última validación (si existe)
         validacion = obj.validaciones.order_by("-fecha_validacion").first()
         return validacion.get_status_display() if validacion else "Pendiente"
+    
+    def get_tiene_validacion(self, obj):
+        # retorna True si la actividad ya tiene al menos una validación
+        return obj.validaciones.exists()
     
     
 class EvidenciaActividadSerializer(serializers.ModelSerializer):
