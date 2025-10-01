@@ -138,3 +138,22 @@ class EditarValidacionPorActividadView(APIView):
                 {"success": False, "message": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+class ObtenerValidacionPorActividadView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, actividad_id):
+        try:
+            validacion = Validacion.objects.filter(actividad_id=actividad_id).last()
+            if not validacion:
+                return Response(
+                    {"error": "No existe validación para esta actividad"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            serializer = ValidacionSerializer(validacion)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
