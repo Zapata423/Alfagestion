@@ -18,7 +18,7 @@ AlfaGestion es una plataforma de gestión de servicio social estudiantil, desarr
  python manage.py runserver
 
  El proyecto estará disponible en: http://127.0.0.1:8000/
-
+python -m pip install Pillow
 
 🗂️ Estructura de Apps
 🔹 accounts: Maneja el registro, login y logout de usuarios. Soporta roles: Estudiante y Docente.
