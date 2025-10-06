@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Institucion, Encargado
 
+
 class InstitucionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institucion
@@ -13,12 +14,13 @@ class InstitucionSerializer(serializers.ModelSerializer):
         validated_data['creador'] = self.context['request'].user
         return super().create(validated_data)
 
+
 class EncargadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Encargado
         fields = ['id', 'nombre', 'apellido', 'correo', 'telefono', 'cargo', 'observaciones',]
         extra_kwargs = {
-            'creador': {'write_only': True}  # no lo envía el cliente, lo asignamos automático
+            'creador': {'write_only': True}  
         }
 
     def create(self, validated_data):

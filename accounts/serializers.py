@@ -1,14 +1,11 @@
 from rest_framework import serializers
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate
 from accounts.models import Usuario  
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db import transaction
 from students.models import Estudiante
 from teachers.models import Docente
 from .models import Rol
-
-
-
 
 
 class LoginTeacherSerializer(serializers.Serializer):
@@ -28,12 +25,13 @@ class LoginTeacherSerializer(serializers.Serializer):
             raise serializers.ValidationError("Solo los Docentes pueden iniciar sesión aquí.")
 
         data["user"] = user
-        # Crear tokens JWT
+
         refresh = RefreshToken.for_user(user)
         data["access"] = str(refresh.access_token)
         data["refresh"] = str(refresh)
         return data
     
+
 class LoginStudentsSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -51,7 +49,7 @@ class LoginStudentsSerializer(serializers.Serializer):
             raise serializers.ValidationError("Solo los Estudiantes pueden iniciar sesión aquí.")
 
         data["user"] = user
-        # Crear tokens JWT
+
         refresh = RefreshToken.for_user(user)
         data["access"] = str(refresh.access_token)
         data["refresh"] = str(refresh)
@@ -71,7 +69,6 @@ class LoginAdminSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError("Credenciales inválidas. Verifique su correo y contraseña.")
         
-
         if not user.is_superuser:
             raise serializers.ValidationError("Solo los Administradores principales pueden iniciar sesión en este portal.")
         
@@ -83,15 +80,13 @@ class LoginAdminSerializer(serializers.Serializer):
         
         return data
 
+
 class EstudianteRegistroCompletoSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
-    
     nombres = serializers.CharField(max_length=30)
     apellidos = serializers.CharField(max_length=30)
     telefono = serializers.CharField(max_length=15,write_only=True, required=False, allow_blank=True) 
     fecha_nacimiento = serializers.DateField()
-
-
     rol_nombre = serializers.CharField(write_only=True, default='Estudiante')
     
     class Meta:
@@ -115,9 +110,7 @@ class EstudianteRegistroCompletoSerializer(serializers.ModelSerializer):
         if data.get('rol_nombre', '').lower() != 'estudiante':
              raise serializers.ValidationError({"rol_nombre": "Solo se permite el registro con el rol 'Estudiante' en este endpoint."})
         
-        
         return data
-
 
     @transaction.atomic
     def create(self, validated_data):
@@ -128,7 +121,6 @@ class EstudianteRegistroCompletoSerializer(serializers.ModelSerializer):
         grado = validated_data['grado']
         grupo = validated_data['grupo']
         
-
         datos_estudiante = {
             'nombres': validated_data['nombres'],
             'apellidos': validated_data['apellidos'],
@@ -163,13 +155,10 @@ class EstudianteRegistroCompletoSerializer(serializers.ModelSerializer):
 
 class DocenteRegistroCompletoSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(write_only=True)
-
     nombre = serializers.CharField(max_length=30)
     apellido = serializers.CharField(max_length=30)
     telefono = serializers.CharField(max_length=15,write_only=True, required=False, allow_blank=True) 
     fecha_nacimiento = serializers.DateField()
-    
-
     rol_nombre = serializers.CharField(write_only=True, default='Docente')
     
     class Meta:
@@ -196,10 +185,9 @@ class DocenteRegistroCompletoSerializer(serializers.ModelSerializer):
         
         return data
 
-    
+# decorador(funcion que envuelve otra funcion), se cguaarda completo, si hay algo incorrecto revierte
     @transaction.atomic
     def create(self, validated_data):
-        """Crea el Docente, luego el Usuario, y establece el vínculo OneToOne."""
 
         email = validated_data['email']
         password = validated_data['password']
@@ -213,7 +201,7 @@ class DocenteRegistroCompletoSerializer(serializers.ModelSerializer):
         }
         
         rol_nombre = validated_data.pop('rol_nombre').lower()
-        validated_data.pop('password_confirm') 
+        validated_data.pop('password_confirm')   # pop es que lo elimina
         validated_data.pop('cargo') 
 
         nuevo_docente = Docente.objects.create(**datos_docente)

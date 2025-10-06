@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'teachers_app'
 
+
 urlpatterns = [
     path("api/estudiantes/", views.EstudiantesPorGradoGrupoView.as_view(), name="estudiantes-grado-grupo"),
     path("api/estudiante/<int:estudiante_id>/actividades/", views.ActividadesPorEstudianteView.as_view(), name="actividades-por-estudiante"),
@@ -13,4 +14,5 @@ urlpatterns = [
     path("api/actividades/<int:pk>/validar/", views.ValidarActividadAPIView.as_view(), name="validar-actividad"),
     path("api/actividades/<int:actividad_id>/validacion/editar/", views.EditarValidacionPorActividadView.as_view(), name="editar_validacion_actividad"),
     path("api/actividades/<int:actividad_id>/validacion/", views.ObtenerValidacionPorActividadView.as_view(), name="obtener_validacion_actividad"),
+    path('api/perfil/docente/', views.DocentePerfilAPIView.as_view(), name='docente-perfil'),
 ]

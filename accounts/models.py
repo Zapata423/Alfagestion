@@ -2,10 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserManager
 
-
-
 class Rol(models.Model):
-    nombre = models.CharField(max_length=50, blank=True, null=True, unique=True)  # estudiante, docente, admin
+    nombre = models.CharField(max_length=50, blank=True, null=True, unique=True)  # solo se pone: estudiante, docente, admin
     descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -39,14 +37,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-
-
-
     def __str__(self):
-        # Usamos el email como identificador principal
         nombreCompleto = self.email or "Usuario sin email"
 
-        # Mostrar información específica según el rol
         if self.rol and hasattr(self.rol, "nombre"):
             nombre_rol = self.rol.nombre.lower()
             if nombre_rol == "docente" and self.cargo:

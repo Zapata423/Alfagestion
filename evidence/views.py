@@ -1,4 +1,4 @@
-from django.shortcuts import render
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,13 +6,13 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Actividad
 from .serializers import ActividadSerializer
 
+
 class UploadActividadAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         serializer = ActividadSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            # asignar automáticamente el estudiante (usuario autenticado)
             actividad = serializer.save()
             return Response({
                 "success": True,
@@ -36,6 +36,7 @@ class UploadActividadAPIView(APIView):
             "errors": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
 
+
 class DeleteActividadView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -46,6 +47,7 @@ class DeleteActividadView(APIView):
             return Response({"detail": "Actividad eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
         except Actividad.DoesNotExist:
             return Response({"detail": "Actividad no encontrada o no tienes permisos."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class MisActividadesView(APIView):
     permission_classes = [IsAuthenticated]

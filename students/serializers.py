@@ -1,8 +1,8 @@
-# students/serializers.py
 
 from rest_framework import serializers
 from students.models import Estudiante
 from accounts.models import Usuario
+
 
 class EstudianteUpdateSerializer(serializers.ModelSerializer):
     class Meta:

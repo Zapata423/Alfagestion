@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Actividad
 from institutions.models import Institucion, Encargado
 
+
 class ActividadSerializer(serializers.ModelSerializer):
     institucion_nombre = serializers.CharField(source="institucion.nombre", read_only=True)
     encargado_nombre = serializers.CharField(source="encargado.nombre", read_only=True)
@@ -17,7 +18,7 @@ class ActividadSerializer(serializers.ModelSerializer):
             "encargado", "encargado_nombre"
         ]
         extra_kwargs = {
-            'creador': {'write_only': True}  # no lo envía el cliente, lo asignamos automático
+            'creador': {'write_only': True}  
         }
 
     def create(self, validated_data):

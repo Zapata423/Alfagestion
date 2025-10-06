@@ -155,7 +155,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),   # Token de acceso dura 60 minutos
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),   # Token de acceso dura 24 horas mientras se dearrolla el software
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),      # Token de refresco dura 7 días
     'ROTATE_REFRESH_TOKENS': True,                    # Opcional: generar un nuevo refresh token en cada login
     'BLACKLIST_AFTER_ROTATION': True,                 # Opcional: invalidar refresh token antiguo

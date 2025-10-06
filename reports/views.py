@@ -7,6 +7,7 @@ from reports.models import Validacion
 from rest_framework.permissions import IsAuthenticated
 from .serializers import ActividadConEstadoSerializer, ValidacionComentarioSerializer
 
+
 class ActividadesConEstadoView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -16,6 +17,7 @@ class ActividadesConEstadoView(APIView):
             actividades, many=True, context={"request": request}
         )
         return Response(serializer.data)
+    
     
 class ComentariosPorActividadAPIView(APIView):
     permission_classes = [IsAuthenticated]

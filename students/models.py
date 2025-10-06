@@ -1,6 +1,6 @@
 from django.db import models
-from accounts.models import Usuario
 from django.db.models import Sum
+
 
 class Estudiante(models.Model):
     nombres = models.CharField(max_length=30, blank=True, null=True)
@@ -12,11 +12,11 @@ class Estudiante(models.Model):
     def __str__(self):
         return f"{self.nombres} {self.apellidos}"
 
+
 class ControlHoras(models.Model):
     estudiante = models.ForeignKey(Estudiante, on_delete=models.CASCADE, related_name="control_horas")
     horas_requeridas = models.IntegerField(default=80)  
     ultima_actualizacion = models.DateTimeField(auto_now=True)
-
 
     def horas_aprobadas(self):
         from evidence.models import Actividad

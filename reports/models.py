@@ -2,7 +2,6 @@ from django.db import models
 from teachers.models import Docente
 
 
-
 class Validacion(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pendiente'),

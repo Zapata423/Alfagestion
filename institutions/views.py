@@ -1,13 +1,10 @@
-from django.shortcuts import render
-from rest_framework.generics import RetrieveAPIView
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Institucion, Encargado
 from .serializers import InstitucionSerializer, EncargadoSerializer
-
-# Create your views here.
 
 
 class MisInstitucionesView(APIView):
@@ -17,6 +14,7 @@ class MisInstitucionesView(APIView):
         instituciones = Institucion.objects.filter(creador=request.user)
         serializer = InstitucionSerializer(instituciones, many=True)
         return Response(serializer.data)
+
 
 class MisEncargadosView(APIView):
     permission_classes = [IsAuthenticated]
@@ -44,6 +42,7 @@ class UploadInstitucionAPIView(APIView):
             "success": False,
             "errors": serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UploadEncargadoAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -74,6 +73,7 @@ class DeleteEncargadoView(APIView):
             return Response({"detail": "Encargado eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
         except Encargado.DoesNotExist:
             return Response({"detail": "Encargado no encontrado o no tienes permisos."}, status=status.HTTP_404_NOT_FOUND)
+   
         
 class DeleteInstitucionView(APIView):
     permission_classes = [IsAuthenticated]

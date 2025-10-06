@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from accounts.models import Usuario
+from .models import Docente
 from evidence.models import Actividad
 from institutions.models import Institucion, Encargado
 from django.db.models import Sum
 from reports.models import Validacion
-
 
 
 class EstudianteConHorasSerializer(serializers.ModelSerializer):
@@ -48,29 +48,27 @@ class EstudianteConHorasSerializer(serializers.ModelSerializer):
         )
         return ultima.fecha_subida if ultima else None
     
-
         
 class ActividadesEstudianteSerializer(serializers.ModelSerializer):
     estado = serializers.SerializerMethodField()
     tiene_validacion = serializers.SerializerMethodField()
-    validacion_id = serializers.SerializerMethodField()  # nuevo campo
+    validacion_id = serializers.SerializerMethodField() 
 
     class Meta:
         model = Actividad
         fields = ["id", "titulo", "horas", "fecha_subida", "estado", "tiene_validacion", "validacion_id"]
 
     def get_estado(self, obj):
-        # Tomamos la validación asociada (solo hay una)
         validacion = obj.validaciones.first()
         return validacion.get_status_display() if validacion else "Pendiente"
     
     def get_tiene_validacion(self, obj):
-        # True si existe la validación
         return obj.validaciones.exists()
     
     def get_validacion_id(self, obj):
         validacion = obj.validaciones.first()
         return validacion.id if validacion else None
+
 
 class EvidenciaActividadSerializer(serializers.ModelSerializer):
     institucion_nombre = serializers.CharField(source="institucion.nombre", read_only=True)
@@ -98,6 +96,7 @@ class EvidenciaInstitucionSerializer(serializers.ModelSerializer):
         fields = ["id", "nombre", "poblacion_intervenida", "direccion", "barrio", "ciudad",
                   "telefono", "email",]
 
+
 class EvidenciaEncargadoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Encargado
@@ -113,3 +112,45 @@ class ValidacionSerializer(serializers.ModelSerializer):
 
     def get_validacion_enviada(self, obj):
         return obj.actividad.validaciones.exists()
+
+
+class DocenteUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Docente
+        fields = [
+            'nombre',
+            'apellido',
+            'telefono',
+            'fecha_nacimiento',
+            'foto',
+        ]
+
+
+class UsuarioPerfilDocenteSerializer(serializers.ModelSerializer):
+    docente = DocenteUpdateSerializer()
+
+    class Meta:
+        model = Usuario
+        fields = [
+            'docente', 
+            'email',
+            'cargo',    
+        ]
+        read_only_fields = ['email']
+
+    def update(self, instance, validated_data):
+        docente_data = validated_data.pop('docente', {})
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if hasattr(instance, 'docente') and instance.docente:
+            docente_instance = instance.docente
+
+            for attr, value in docente_data.items():
+                setattr(docente_instance, attr, value)
+
+            docente_instance.save()
+
+        return instance

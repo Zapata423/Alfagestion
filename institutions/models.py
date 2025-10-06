@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Institucion(models.Model):
     nombre = models.CharField(max_length=200)
     poblacion_intervenida = models.CharField(max_length=100, blank=True, null=True)
@@ -12,6 +13,7 @@ class Institucion(models.Model):
 
     def __str__(self):
         return self.nombre
+   
     
 class Encargado(models.Model):
     nombre = models.CharField(max_length=100)
