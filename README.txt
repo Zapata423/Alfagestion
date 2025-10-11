@@ -6,6 +6,28 @@ AlfaGestion es una plataforma de gestión de servicio social estudiantil,
  Permite administrar estudiantes, docentes, instituciones, actividades y validaciones de servicio social.
 
 
+⚠️ Configuración Inicial Obligatoria
+
+Antes de iniciar el uso del sistema, es necesario realizar la siguiente configuración desde el panel de administración de Django (/admin):
+
+Crear un Superusuario o Administrador
+Este usuario será el encargado de gestionar los roles y usuarios iniciales.
+Se puede crear desde la terminal o el panel de administración:
+
+python manage.py createsuperuser
+
+Luego ingresar a:
+👉 http://127.0.0.1:8000/admin/
+
+Crear los Roles del Sistema
+Dentro del modelo Rol, deben crearse los siguientes registros:
+
+Estudiante
+
+Docente
+
+Estos roles son fundamentales para el funcionamiento del sistema, ya que determinan los permisos y vistas que cada usuario tendrá dentro de la plataforma.
+
 
  ✅ Instalación y Ejecución(PARA BEDOYA Y GATO):
 
