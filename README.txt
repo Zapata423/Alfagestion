@@ -6,6 +6,29 @@ AlfaGestion es una plataforma de gestión de servicio social estudiantil,
  Permite administrar estudiantes, docentes, instituciones, actividades y validaciones de servicio social.
 
 
+ ✅ Instalación y Ejecución(PARA BEDOYA Y GATO):
+
+•	Cambiar el puerto : 5433 -> 5432
+
+•	Crear entorno virtual e instalar dependencias:
+ python -m venv venv
+ venv\Scripts\activate      
+pip install -r requirements/local.txt
+
+•	Aplicar migraciones:
+ python manage.py makemigrations
+ python manage.py migrate
+
+•	Crear superusuario:
+ python manage.py createsuperuser
+
+•	Ejecutar servidor:
+ python manage.py runserver
+
+ El proyecto estará disponible en: http://127.0.0.1:8000/
+
+
+
 ⚠️ Configuración Inicial Obligatoria
 
 Antes de iniciar el uso del sistema, es necesario realizar la siguiente configuración desde el panel de administración de Django (/admin):
@@ -23,32 +46,9 @@ Crear los Roles del Sistema
 Dentro del modelo Rol, deben crearse los siguientes registros:
 
 Estudiante
-
 Docente
 
 Estos roles son fundamentales para el funcionamiento del sistema, ya que determinan los permisos y vistas que cada usuario tendrá dentro de la plataforma.
-
-
- ✅ Instalación y Ejecución(PARA BEDOYA Y GATO):
-
-•	Cambiar el puerto : 5433 -> 5432
-
-•	Crear entorno virtual e instalar dependencias:
- python -m venv venv
- venv\Scripts\activate      # En Windows
- pip install -r requirements.txt
-
-•	Aplicar migraciones:
- python manage.py migrate
-
-•	Crear superusuario:
- python manage.py createsuperuser
-
-•	Ejecutar servidor:
- python manage.py runserver
-
- El proyecto estará disponible en: http://127.0.0.1:8000/
-
 
 
 
@@ -105,4 +105,3 @@ Estos roles son fundamentales para el funcionamiento del sistema, ya que determi
 * GET /api/actividades/<id>/institucion/ → Detalle de Institución asociada a una actividad específica.
 * GET /api/actividades/<id>/encargado/ → Detalle de Encargado asociado a una actividad específica.
 * POST /api/actividades/<id>/validacion/crear/  → Crear validación.
-

@@ -6,3 +6,7 @@ djangorestframework==3.16.1
 pytz==2024.1
 sqlparse==0.5.1
 Unipath==1.1
+
+djangorestframework-simplejwt
+django-extensions
+django-cors-headers
